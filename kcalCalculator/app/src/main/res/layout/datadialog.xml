@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/spnData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+    </Spinner>
+<EditText
+    android:id="@+id/edtData"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="음식 (운동)"
+    android:gravity="center"/>
+    <EditText
+        android:id="@+id/edtData2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="칼로리"
+        android:inputType="numberDecimal"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/btnDataAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main2"
+    tools:context=".MainActivity">
+   <TextView
+       android:id="@+id/tvTime"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:textSize="20dp"
+       android:textStyle="italic"/>
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_toLeftOf="@+id/tvMoney"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/money"/>
+    <TextView
+        android:id="@+id/tvMoney"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_alignParentRight="true"
+        android:textSize="20dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStuff"
+        android:layout_below="@+id/tvMoney">
+        <ListView
+            android:background="#ADBF8C"
+            android:id="@+id/Livestock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnStuff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="생산물"/>
+    <Button
+        android:id="@+id/btnStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="동물보기"
+        android:layout_alignParentBottom="true"/>
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="초기화"/>
+
+
+
+</RelativeLayout>
