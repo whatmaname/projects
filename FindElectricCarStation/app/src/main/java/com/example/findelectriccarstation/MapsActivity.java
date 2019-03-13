@@ -42,7 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String statId = null, statNm = null, chgerId = null, chgerType = null, stat = null, lat = null, lng = null,
             addrDoro = null, useTime = null;
     //API키
-    String key = "cHfUP8XMiqg3rmQZdzaDT1eoyM7%2Bj8x%2FfpyNSxMPJCKupD%2FHWuIyKHwfjMx0UEIUuj%2F1fG4qPvYj5%2BprLnWLdw%3D%3D";
+    String key = "a5LQB3DrXgIE5J%2Bwaz4HpLmUqyroCcRREqjVXvIGqceLLrS52Ob2nNQLxQNjXngBm19%2FMnFCQ%2BjNdSI2LqCe0A%3D%3D";
 
     GPSinfo gps;
     boolean isAccessFineLocation = false;
@@ -245,7 +245,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     bun.putString("area",addrDoro);
                                     bun.putString("chgerType",chgerType);
                                     bun.putString("useTime",useTime);
-
 
                                     Message msg = handler.obtainMessage();
                                     msg.setData(bun);
