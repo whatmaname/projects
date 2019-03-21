@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">FindElectricCarStation</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">어딨지 충전소</string>
+    <string name="title_activity_maps">어딨지 충전소</string>
 </resources>

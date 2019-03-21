@@ -1,5 +1,6 @@
 package com.example.findelectriccarstation;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -7,7 +8,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,7 +39,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     //API로부터 값을 받을 때 태그저장용
     boolean isStatId = false, isStatNm = false, isChgerId = false, isChgerType = false, isStat = false, isLat = false,
             isLng = false, isAddrDoro = false, isUseTime = false;
@@ -51,24 +56,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final int PERMISSIONS_ACCESS_FINE_LOCATION = 1000;
     final int PERMISSIONS_ACCESS_COARSE_LOCATION = 1001;
 
-    LatLng place ;
+    LatLng place;
     private GoogleMap mMap;
 
     XmlPullParserFactory parserFactory;
     XmlPullParser parser;
     URL url;
-    Button btnMyPosition,btnShow;
-    Spinner spnArea,spnDetail;
-    String [] area = {"서울특별시", "부산광역시", "대구광역시", "인천광역시",
+    //    Button btnMyPosition,btnShow;
+    /*Spinner spnArea,spnDetail;*/
+    String[] area = {"서울특별시", "부산광역시", "대구광역시", "인천광역시",
             "광주광역시", "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원도",
-            "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도","제주특별자치도"};
+            "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도"};
     ArrayList<String> detailArea = new ArrayList<>();
-    ArrayList<String> detailArea2 = new ArrayList<>();
+    //    ArrayList<String> detailArea2 = new ArrayList<>();
     ArrayList<String> names = new ArrayList<>();
+    ArrayList<String> stats = new ArrayList<>();
     ArrayList<String> useTimes = new ArrayList<>();
     ArrayList<String> chgerTypes = new ArrayList<>();
     ArrayList<LatLng> places = new ArrayList<>();
-    ArrayList<LatLng> places2 = new ArrayList<>();
+//    ArrayList<LatLng> places2 = new ArrayList<>();
+
+    LatLng position;
+    AlertDialog.Builder dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,15 +88,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        setTitle("Electric CarStation");
-        btnMyPosition = (Button)findViewById(R.id.btnMyPosition);
-        btnShow = (Button)findViewById(R.id.btnShow);
+//        btnMyPosition = (Button)findViewById(R.id.btnMyPosition);
+       /* btnShow = (Button)findViewById(R.id.btnShow);
         spnArea = (Spinner)findViewById(R.id.spnArea);
-        spnDetail = (Spinner)findViewById(R.id.spnDetail);
+        spnDetail = (Spinner)findViewById(R.id.spnDetail);*/
 
-        Log.d("사이즈 : ",""+ detailArea.size());
+        Log.d("사이즈 : ", "" + detailArea.size());
 
-        //spnArea에 장착할 어댑터
+
+        position = getIntent().getParcelableExtra("position");
+        dialog = new AlertDialog.Builder(this);
+        dialog.setIcon(R.drawable.plug1);
+        /*//spnArea에 장착할 어댑터
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item
         ,area);
         spnArea.setAdapter(adapter);
@@ -133,25 +146,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(places2.get(spnDetail.getSelectedItemPosition()),15));
                 }
             }
-        });
-        //현위치로 이동
-        btnMyPosition.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gps = new GPSinfo(MapsActivity.this);
-                double latitude = 0;
-                double longitude = 0;
-                if (gps.isGetLocation()) {
-                    latitude = gps.getLatitude();
-                    longitude = gps.getLongitude();
-                } else {
-                    // GPS 를 사용할수 없으므로
-                    gps.showSettingsAlert();
-                }
-                Log.d("gps :", "위도 :"+ latitude + "경도 :"+ longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
-            }
-        });
+        });*/
+
+
         //메인 쓰레드에서 네트워크작업하면 에러떠서 쓰레드생성
         new Thread() {
 
@@ -216,6 +213,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     chgerType = parser.getText();
                                     isChgerType = false;
                                 }
+                                if (isStat) {
+                                    stat = parser.getText();
+                                    isStat = false;
+                                }
                                 if (isLat) {
                                     lat = parser.getText();
                                     isLat = false;
@@ -241,10 +242,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     bun.putString("markers", lat);
                                     bun.putString("markers2", lng);
-                                    bun.putString("name",statNm);
-                                    bun.putString("area",addrDoro);
-                                    bun.putString("chgerType",chgerType);
-                                    bun.putString("useTime",useTime);
+                                    bun.putString("name", statNm);
+                                    bun.putString("area", addrDoro);
+                                    bun.putString("chgerType", chgerType);
+                                    bun.putString("useTime", useTime);
+                                    bun.putString("stat", stat);
 
                                     Message msg = handler.obtainMessage();
                                     msg.setData(bun);
@@ -267,6 +269,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+
     //핸들러로 받아서 메인으로 보냄
     Handler handler = new Handler() {
         @Override
@@ -277,8 +280,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String name = bun.getString("name");
             names.add(bun.getString("name"));
             useTimes.add(bun.getString("useTime"));
-            chgerTypes.add(bun.getString("chgerType"));
             detailArea.add(bun.getString("area"));
+            switch (bun.getString("chgerType")) {
+                case "01":
+                    chgerTypes.add("DC차데모");
+                    break;
+                case "03":
+                    chgerTypes.add("DC차데모 + AC3상");
+                    break;
+                case "06":
+                    chgerTypes.add("DC차데모+AC3상+DC콤보");
+                    break;
+                default:
+                    chgerTypes.add("");
+                    break;
+            }
+            switch (bun.getString("stat")) {
+                case "1":
+                    stats.add("통신이상");
+                    break;
+                case "2":
+                    stats.add("충전대기");
+                    break;
+                case "3":
+                    stats.add("충전중");
+                    break;
+                case "4":
+                    stats.add("운영중지");
+                    break;
+                case "5":
+                    stats.add("점검중");
+                    break;
+                default:
+                    stats.add("");
+                    break;
+
+            }
             //Log.d("주소 :",addrDoro);
             place = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
             //Log.d("마커1", " " + place);
@@ -289,6 +326,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(markerOptions);
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbar_actions, menu);
+
+        return true;
+    }
+
+    //현위치로 이동
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_location:
+                gps = new GPSinfo(MapsActivity.this);
+                double latitude = 0;
+                double longitude = 0;
+                if (gps.isGetLocation()) {
+                    latitude = gps.getLatitude();
+                    longitude = gps.getLongitude();
+                } else {
+                    // GPS 를 사용할수 없으므로
+                    gps.showSettingsAlert();
+                }
+                Log.d("gps :", "위도 :" + latitude + "경도 :" + longitude);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
+
+                return true;
+
+            default:
+
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
     //현위치와 목표위치 계산용메서드
     public static double CalculationByDistance(LatLng StartP, LatLng EndP) {
         int Radius = 6371;// radius of earth in Km
@@ -334,21 +406,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // GPS 를 사용할수 없으므로
             gps.showSettingsAlert();
         }
-        Log.d("gps :", "위도 :"+ latitude + "경도 :"+ longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
-       //마커클릭시 오차작은범위로 정보뜨워줌
+        Log.d("gps :", "위도 :" + latitude + "경도 :" + longitude);
+        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+        //마커클릭시 오차작은범위로 정보뜨워줌
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 int i = 0;
-                while (true){
-                    if (CalculationByDistance(marker.getPosition(),places.get(i))<0.4){
-                        Toast.makeText(MapsActivity.this,
-                                names.get(i)+"\n 주소 :"+detailArea.get(i)
-                                        +"\n 이용시간 :"+useTimes.get(i)+
-                                        "\n 충전기 타입 :"+chgerTypes.get(i)  , Toast.LENGTH_LONG).show();
+                while (true) {
+                    if (CalculationByDistance(marker.getPosition(), places.get(i)) < 0.01) {
+                        dialog.setTitle(names.get(i));
+                        dialog.setMessage("주소 : " + detailArea.get(i)
+                                + "\n 이용시간 : " + useTimes.get(i) +
+                                "\n 충전기 타입 : " + chgerTypes.get(i) +
+                                "\n 충전기 상태 : " + stats.get(i));
+                        dialog.setPositiveButton("확인", null);
+                        dialog.show();
+
                         break;
-                    }else {
+                    } else {
                         i++;
                     }
                 }
