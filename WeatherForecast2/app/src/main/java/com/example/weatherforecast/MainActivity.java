@@ -26,6 +26,12 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -33,13 +39,19 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.FirebaseApp;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -231,6 +243,20 @@ public class MainActivity extends AppCompatActivity {
 
         lineChart.animateY(5000);
         lineChart.setBackgroundColor(Color.rgb(246, 230, 203));
+        /*FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job myJob = dispatcher.newJobBuilder()
+                .setService(MyJobService.class)
+                .setTag("notification")
+                .setRecurring(false)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                .setTrigger(Trigger.executionWindow(0,3600))
+                .setConstraints(
+                        // only run on an unmetered network
+                        Constraint.ON_UNMETERED_NETWORK
+                ).build();
+
+        dispatcher.mustSchedule(myJob);*/
+
 
     }
 
@@ -556,5 +582,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
+    PeriodicWorkRequest createRequest(){
+        return new PeriodicWorkRequest.Builder(MyWorker.class,4, TimeUnit.HOURS).setConstraints(createConstraints()).build();
+    }
+    Constraints createConstraints(){
+        return new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .setRequiresBatteryNotLow(true)
+                .build();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        WorkManager.getInstance().enqueue(createRequest());
+    }
 }
