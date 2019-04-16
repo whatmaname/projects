@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import retrofit2.Call;
@@ -243,19 +244,20 @@ public class MainActivity extends AppCompatActivity {
 
         lineChart.animateY(5000);
         lineChart.setBackgroundColor(Color.rgb(246, 230, 203));
-        /*FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         Job myJob = dispatcher.newJobBuilder()
                 .setService(MyJobService.class)
                 .setTag("notification")
                 .setRecurring(false)
                 .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                //한 시간 뒤에 작동
                 .setTrigger(Trigger.executionWindow(0,3600))
                 .setConstraints(
                         // only run on an unmetered network
                         Constraint.ON_UNMETERED_NETWORK
                 ).build();
 
-        dispatcher.mustSchedule(myJob);*/
+        dispatcher.mustSchedule(myJob);
 
 
     }
@@ -582,8 +584,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    PeriodicWorkRequest createRequest(){
-        return new PeriodicWorkRequest.Builder(MyWorker.class,4, TimeUnit.HOURS).setConstraints(createConstraints()).build();
+    //한번만 동작 기한을 두고 동작할 수 있게는PeriodicWorkRequest
+   /* OneTimeWorkRequest createRequest(){
+        return new OneTimeWorkRequest.Builder(MyWorker.class)
+                .setInitialDelay(2,TimeUnit.HOURS)
+                .setConstraints(createConstraints()).build();
     }
     Constraints createConstraints(){
         return new Constraints.Builder()
@@ -591,9 +596,10 @@ public class MainActivity extends AppCompatActivity {
                 .setRequiresBatteryNotLow(true)
                 .build();
     }
+    //앱 꺼지면 서비스 워크매니저 실행
     @Override
     protected void onDestroy() {
         super.onDestroy();
         WorkManager.getInstance().enqueue(createRequest());
-    }
+    }*/
 }

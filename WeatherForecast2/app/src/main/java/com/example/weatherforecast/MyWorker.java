@@ -80,7 +80,7 @@ public class MyWorker extends Worker {
             channelMessage.enableLights(true);
             channelMessage.enableVibration(true);
             channelMessage.setShowBadge(false);
-            channelMessage.setVibrationPattern(new long[]{100, 200, 100, 200});
+            channelMessage.setVibrationPattern(new long[]{100, 200});
             Objects.requireNonNull(notichannel).createNotificationChannel(channelMessage);
 
             notificationBuilder =

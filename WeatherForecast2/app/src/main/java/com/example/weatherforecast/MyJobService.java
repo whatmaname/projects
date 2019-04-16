@@ -42,7 +42,7 @@ public class MyJobService extends JobService {
                     title = airKorea.body.items.itemlist.get(0).getStationName();
                     message = airKorea.body.items.itemlist.get(0).getPm10Grade();
                     Log.d("잡디스패처 : ", message);
-                    if (Integer.parseInt(message)>=2) {
+                    if (Integer.parseInt(message)>2) {
                         sendNotification(title, "미세먼지 나쁨");
                     }
                 }
@@ -78,7 +78,7 @@ public class MyJobService extends JobService {
             channelMessage.enableLights(true);
             channelMessage.enableVibration(true);
             channelMessage.setShowBadge(false);
-            channelMessage.setVibrationPattern(new long[]{100, 200, 100, 200});
+            channelMessage.setVibrationPattern(new long[]{100, 200});
             Objects.requireNonNull(notichannel).createNotificationChannel(channelMessage);
 
             notificationBuilder =
